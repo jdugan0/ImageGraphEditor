@@ -17,7 +17,7 @@ public abstract class GraphNode
 
     public Guid id;
 
-    public virtual void Evaluate() { }
+    public virtual void Evaluate(Dag dag) { }
 
     public virtual void Initalize(Dag dag, Guid id)
     {
@@ -57,10 +57,10 @@ public class Edge
 
 public class Dag
 {
-    private Dictionary<Guid, Port> ports = new Dictionary<Guid, Port>();
-    private Dictionary<Guid, GraphNode> nodes = new Dictionary<Guid, GraphNode>();
-    private Dictionary<Guid, Edge> edges = new Dictionary<Guid, Edge>();
-    private Dictionary<Guid, GraphNode> rootNodes = new Dictionary<Guid, GraphNode>();
+    public readonly Dictionary<Guid, Port> ports = new Dictionary<Guid, Port>();
+    public readonly Dictionary<Guid, GraphNode> nodes = new Dictionary<Guid, GraphNode>();
+    public readonly Dictionary<Guid, Edge> edges = new Dictionary<Guid, Edge>();
+    public readonly Dictionary<Guid, GraphNode> rootNodes = new Dictionary<Guid, GraphNode>();
 
     public Guid AddNode(GraphNode node)
     {
