@@ -1,10 +1,59 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Dynamic;
-using System.Linq;
-using System.Xml;
-using Godot;
+
+public enum GraphType
+{
+    Float,
+    Double,
+    Int,
+    Image,
+    Null,
+}
+
+public abstract class GraphNode
+{
+    public readonly List<Guid> outputPorts = new List<Guid>();
+    public readonly List<Guid> inputPorts = new List<Guid>();
+
+    public Guid id;
+
+    public virtual void Evaluate() { }
+
+    public virtual void Initalize(Dag dag, Guid id)
+    {
+        this.id = id;
+    }
+}
+
+public class Port
+{
+    public bool isInput;
+    public List<Guid> edges;
+    public Guid parent;
+    public GraphType type = GraphType.Null;
+    public object data = null;
+
+    public Port(bool isInput, Guid parent, GraphType graphType)
+    {
+        this.isInput = isInput;
+        this.parent = parent;
+        this.type = graphType;
+    }
+}
+
+public class Edge
+{
+    public Guid id;
+    public Guid portInput;
+    public Guid portOutput;
+
+    public Edge(Guid id, Guid input, Guid output)
+    {
+        this.id = id;
+        this.portInput = input;
+        this.portOutput = output;
+    }
+}
 
 public class Dag
 {
@@ -12,60 +61,6 @@ public class Dag
     private Dictionary<Guid, GraphNode> nodes = new Dictionary<Guid, GraphNode>();
     private Dictionary<Guid, Edge> edges = new Dictionary<Guid, Edge>();
     private Dictionary<Guid, GraphNode> rootNodes = new Dictionary<Guid, GraphNode>();
-
-    public enum GraphType
-    {
-        Float,
-        Double,
-        Int,
-        Image,
-        Null,
-    }
-
-    public abstract class GraphNode
-    {
-        public readonly List<Guid> outputPorts = new List<Guid>();
-        public readonly List<Guid> inputPorts = new List<Guid>();
-
-        public Guid id;
-
-        public virtual void Evaluate() { }
-
-        public virtual void Initalize(Dag dag, Guid id)
-        {
-            this.id = id;
-        }
-    }
-
-    public class Port
-    {
-        public bool isInput;
-        public List<Guid> edges;
-        public Guid parent;
-        public GraphType type = GraphType.Null;
-        public object data = null;
-
-        public Port(bool isInput, Guid parent, GraphType graphType)
-        {
-            this.isInput = isInput;
-            this.parent = parent;
-            this.type = graphType;
-        }
-    }
-
-    public class Edge
-    {
-        public Guid id;
-        public Guid portInput;
-        public Guid portOutput;
-
-        public Edge(Guid id, Guid input, Guid output)
-        {
-            this.id = id;
-            this.portInput = input;
-            this.portOutput = output;
-        }
-    }
 
     public Guid AddNode(GraphNode node)
     {
