@@ -22,25 +22,12 @@ public class Dag
         Null,
     }
 
-    public class GraphData
-    {
-        public GraphType type = GraphType.Null;
-        public object data = null;
-
-        public GraphData(GraphType type, object data)
-        {
-            this.data = data;
-            this.type = type;
-        }
-    }
-
     public abstract class GraphNode
     {
-        public readonly List<Guid> outputs = new List<Guid>();
-        public readonly List<Guid> inputs = new List<Guid>();
+        public readonly List<Guid> outputPorts = new List<Guid>();
+        public readonly List<Guid> inputPorts = new List<Guid>();
 
         public Guid id;
-        public GraphData data;
 
         public virtual void Evaluate() { }
 
@@ -56,6 +43,7 @@ public class Dag
         public List<Guid> edges;
         public Guid parent;
         public GraphType type = GraphType.Null;
+        public object data = null;
 
         public Port(bool isInput, Guid parent, GraphType graphType)
         {
@@ -84,7 +72,7 @@ public class Dag
         Guid id = Guid.NewGuid();
         node.Initalize(this, id);
         nodes.Add(id, node);
-        if (node.inputs.Count == 0)
+        if (node.inputPorts.Count == 0)
         {
             rootNodes.Add(id, node);
         }
@@ -100,11 +88,11 @@ public class Dag
         port.parent = nodeId;
         if (port.isInput)
         {
-            node.inputs.Add(id);
+            node.inputPorts.Add(id);
         }
         else
         {
-            node.outputs.Add(id);
+            node.outputPorts.Add(id);
         }
         return id;
     }
@@ -146,7 +134,7 @@ public class Dag
         {
             Guid curr = nodeQueue.Dequeue();
             GraphNode n = nodes[curr];
-            foreach (Guid portid in n.outputs)
+            foreach (Guid portid in n.outputPorts)
             {
                 Port p = ports[portid];
                 foreach (Guid eid in p.edges)
@@ -182,11 +170,11 @@ public class Dag
         Port p = ports[portId];
         if (p.isInput)
         {
-            nodes[p.parent].inputs.Remove(portId);
+            nodes[p.parent].inputPorts.Remove(portId);
         }
         else
         {
-            nodes[p.parent].outputs.Remove(portId);
+            nodes[p.parent].outputPorts.Remove(portId);
         }
         foreach (Guid eid in p.edges)
         {
@@ -200,22 +188,22 @@ public class Dag
         GraphNode node = nodes[nodeId];
         nodes.Remove(nodeId);
         rootNodes.Remove(nodeId);
-        foreach (Guid port in node.inputs)
+        foreach (Guid port in node.inputPorts)
         {
             foreach (Guid eid in ports[port].edges)
             {
                 RemoveEdge(eid);
             }
         }
-        foreach (Guid port in node.outputs)
+        foreach (Guid port in node.outputPorts)
         {
             foreach (Guid eid in ports[port].edges)
             {
                 RemoveEdge(eid);
             }
         }
-        node.inputs.Clear();
-        node.outputs.Clear();
+        node.inputPorts.Clear();
+        node.outputPorts.Clear();
         return node;
     }
 }
