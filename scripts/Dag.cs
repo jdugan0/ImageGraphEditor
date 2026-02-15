@@ -3,9 +3,7 @@ using System.Collections.Generic;
 
 public enum GraphType
 {
-    Float,
-    Double,
-    Int,
+    Number,
     Image,
     Null,
 }
@@ -23,6 +21,8 @@ public abstract class GraphNode
     {
         this.id = id;
     }
+
+    public virtual void SetData(Dag dag, Dictionary<string, object> dict) { }
 }
 
 public class Port
