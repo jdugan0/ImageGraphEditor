@@ -13,6 +13,8 @@ public abstract class GraphNode
     public readonly List<Guid> outputPorts = new List<Guid>();
     public readonly List<Guid> inputPorts = new List<Guid>();
 
+    public readonly Dictionary<string, object> data = new Dictionary<string, object>();
+
     public Guid id;
 
     public virtual void Evaluate(Dag dag) { }
@@ -92,10 +94,8 @@ public class Dag
         return id;
     }
 
-    public Guid Connect(Guid portInput, Guid portOutput)
+    public void TryConnect(Port input, Port output)
     {
-        Port input = ports[portInput];
-        Port output = ports[portOutput];
         if (!input.isInput || output.isInput)
         {
             throw new Exception();
@@ -112,6 +112,13 @@ public class Dag
         {
             throw new Exception();
         }
+    }
+
+    public Guid Connect(Guid portInput, Guid portOutput)
+    {
+        Port input = ports[portInput];
+        Port output = ports[portOutput];
+        TryConnect(input, output);
         Guid id = Guid.NewGuid();
         Edge edge = new Edge(id, portInput, portOutput);
         edges.Add(id, edge);
@@ -124,7 +131,7 @@ public class Dag
     {
         Queue<Guid> nodeQueue = new Queue<Guid>();
         nodeQueue.Enqueue(n1);
-        HashSet<Guid> seen = new HashSet<Guid>();
+        HashSet<Guid> seen = [n1];
         while (nodeQueue.Count != 0)
         {
             Guid curr = nodeQueue.Dequeue();
@@ -182,7 +189,10 @@ public class Dag
     {
         GraphNode node = nodes[nodeId];
         nodes.Remove(nodeId);
-        rootNodes.Remove(nodeId);
+        if (node.inputPorts.Count == 0)
+        {
+            rootNodes.Remove(nodeId);
+        }
         foreach (Guid port in node.inputPorts)
         {
             foreach (Guid eid in ports[port].edges)
@@ -200,5 +210,37 @@ public class Dag
         node.inputPorts.Clear();
         node.outputPorts.Clear();
         return node;
+    }
+
+    public void Propegate()
+    {
+        Queue<Guid> nodeQueue = new Queue<Guid>();
+        HashSet<Guid> seen = new HashSet<Guid>();
+        foreach (var x in rootNodes.Keys)
+        {
+            nodeQueue.Enqueue(x);
+            seen.Add(x);
+        }
+        while (nodeQueue.Count != 0)
+        {
+            Guid curr = nodeQueue.Dequeue();
+            GraphNode n = nodes[curr];
+            n.Evaluate(this);
+            foreach (Guid portid in n.outputPorts)
+            {
+                Port p = ports[portid];
+                foreach (Guid eid in p.edges)
+                {
+                    Edge e = edges[eid];
+                    Guid parent = ports[e.portInput].parent;
+                    if (!seen.Contains(parent))
+                    {
+                        ports[e.portInput].data = ports[e.portOutput].data;
+                        seen.Add(parent);
+                        nodeQueue.Enqueue(parent);
+                    }
+                }
+            }
+        }
     }
 }

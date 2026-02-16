@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 
-public partial class Add : GraphNode
+public partial class AddGraphNode : GraphNode
 {
     public override void Initalize(Dag dag, Guid id)
     {
@@ -25,7 +25,7 @@ public partial class Add : GraphNode
     }
 }
 
-public partial class Constant : GraphNode
+public partial class ConstantGraphNode : GraphNode
 {
     public override void Initalize(Dag dag, Guid id)
     {
