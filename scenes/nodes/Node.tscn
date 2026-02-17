@@ -3,7 +3,14 @@
 [ext_resource type="Script" uid="uid://bjgeh5da4ao5k" path="res://scripts/frontend/NodeUI.cs" id="1_gmumw"]
 [ext_resource type="PackedScene" uid="uid://dvmohah20ujau" path="res://scenes/Port.tscn" id="2_nuwou"]
 
-[node name="Control" type="Control" unique_id=830049071 node_paths=PackedStringArray("inputPorts", "outputPorts")]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nuwou"]
+bg_color = Color(0.18932778, 0.1893278, 0.18932769, 1)
+border_width_left = 5
+border_width_top = 12
+border_width_right = 5
+border_width_bottom = 5
+
+[node name="Control" type="Control" unique_id=830049071 node_paths=PackedStringArray("inputPorts", "outputPorts", "message", "panel")]
 layout_mode = 3
 anchors_preset = 0
 size_flags_horizontal = 4
@@ -13,6 +20,9 @@ inputPorts = NodePath("Node/Inputs")
 outputPorts = NodePath("Node/Outputs")
 portScene = ExtResource("2_nuwou")
 references = Dictionary[String, NodePath]({})
+panelTheme = SubResource("StyleBoxFlat_nuwou")
+message = NodePath("Node/Label")
+panel = NodePath("Node")
 
 [node name="Node" type="Panel" parent="." unique_id=415683582]
 layout_mode = 1
@@ -60,5 +70,14 @@ offset_bottom = 31.0
 grow_horizontal = 0
 focus_mode = 0
 text = "X"
+
+[node name="Label" type="Label" parent="Node" unique_id=1064972382]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 12.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 8
+horizontal_alignment = 1
 
 [connection signal="pressed" from="Node/Button" to="." method="RemoveSelf"]

@@ -280,8 +280,16 @@ public class Dag
             processed++;
 
             GraphNode n = nodes[curr];
-            n.Evaluate(this);
-            n.UI?.SetData();
+            try
+            {
+                n.Evaluate(this);
+                n.UI?.SetData();
+                n.UI?.SucceedEval();
+            }
+            catch (Exception e)
+            {
+                n.UI?.FailedEval(e.Message);
+            }
             foreach (Guid outPortId in n.outputPorts)
             {
                 Port outPort = ports[outPortId];

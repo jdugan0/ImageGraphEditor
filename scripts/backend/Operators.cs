@@ -27,14 +27,11 @@ public partial class AddGraphNode : GraphNode
         Port i1 = dag.ports[inputPorts[0]];
         Port i2 = dag.ports[inputPorts[1]];
         Port o1 = dag.ports[outputPorts[0]];
-        if (i1.data != null && i2.data != null)
+        if (i1.data == null || i2.data == null)
         {
-            o1.data = (float)i1.data + (float)i2.data;
+            throw new Exception("Input data is null/disconnected.");
         }
-        else
-        {
-            o1.data = 0.0f;
-        }
+        o1.data = (float)i1.data + (float)i2.data;
         // GD.Print(o1.data);
         data["result"] = o1.data;
     }

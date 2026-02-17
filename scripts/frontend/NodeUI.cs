@@ -23,6 +23,17 @@ public partial class NodeUI : Control
     Dictionary<string, NodePath> references;
     public GraphNodeTypes operatorType;
 
+    [Export]
+    public StyleBoxFlat panelTheme;
+
+    [Export]
+    Label message;
+
+    [Export]
+    Panel panel;
+
+    private StyleBoxFlat _panelStyle;
+
     public void Init()
     {
         dag = DataManager.instance.dag;
@@ -43,12 +54,30 @@ public partial class NodeUI : Control
         }
     }
 
+    public override void _Ready()
+    {
+        _panelStyle = (StyleBoxFlat)panelTheme.Duplicate(true);
+        panel.AddThemeStyleboxOverride("panel", _panelStyle);
+        _panelStyle.BorderColor = _panelStyle.BgColor;
+    }
+
     public override void _Process(double delta) { }
 
     public void RemoveSelf()
     {
         dag.RemoveNode(id);
         QueueFree();
+    }
+
+    public void FailedEval(string msg)
+    {
+        message.Text = msg;
+        _panelStyle.BorderColor = Colors.Red;
+    }
+
+    public void SucceedEval()
+    {
+        _panelStyle.BorderColor = panelTheme.BgColor;
     }
 
     public void SetData()
