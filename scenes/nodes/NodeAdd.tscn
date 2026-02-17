@@ -3,11 +3,11 @@
 [ext_resource type="PackedScene" uid="uid://oxotdxhx6jy3" path="res://scenes/nodes/Node.tscn" id="1_oh70m"]
 
 [node name="Node" unique_id=415683582 instance=ExtResource("1_oh70m")]
-references = {
+references = Dictionary[String, NodePath]({
 "label": NodePath("Label")
-}
+})
 
-[node name="Label" type="Label" parent="." index="2" unique_id=581001361]
+[node name="Label" type="Label" parent="." index="1" unique_id=581001361]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

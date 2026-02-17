@@ -3,30 +3,49 @@
 [ext_resource type="Script" uid="uid://bjgeh5da4ao5k" path="res://scripts/frontend/NodeUI.cs" id="1_gmumw"]
 [ext_resource type="PackedScene" uid="uid://dvmohah20ujau" path="res://scenes/Port.tscn" id="2_nuwou"]
 
-[node name="Node" type="Panel" unique_id=415683582 node_paths=PackedStringArray("inputPorts", "outputPorts", "references")]
-offset_right = 200.0
-offset_bottom = 150.0
+[node name="Control" type="Control" unique_id=830049071 node_paths=PackedStringArray("inputPorts", "outputPorts")]
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
 script = ExtResource("1_gmumw")
-inputPorts = NodePath("Inputs")
-outputPorts = NodePath("Outputs")
+inputPorts = NodePath("Node/Inputs")
+outputPorts = NodePath("Node/Outputs")
 portScene = ExtResource("2_nuwou")
-references = {}
+references = Dictionary[String, NodePath]({})
 
-[node name="Inputs" type="VBoxContainer" parent="." unique_id=1038217595]
+[node name="Node" type="Panel" parent="." unique_id=415683582]
 layout_mode = 1
-anchors_preset = 9
-anchor_bottom = 1.0
-offset_right = 22.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -75.0
+offset_right = 100.0
+offset_bottom = 75.0
+grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Inputs" type="VBoxContainer" parent="Node" unique_id=1038217595]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.1
+anchor_right = 0.1
+anchor_bottom = 1.0
+grow_vertical = 2
+theme_override_constants/separation = 62
 alignment = 1
 
-[node name="Outputs" type="VBoxContainer" parent="." unique_id=1567751888]
+[node name="Outputs" type="VBoxContainer" parent="Node" unique_id=1567751888]
 layout_mode = 1
 anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 22.0
+offset_left = -20.0
+offset_right = 20.0
 grow_horizontal = 0
 grow_vertical = 2
 alignment = 1

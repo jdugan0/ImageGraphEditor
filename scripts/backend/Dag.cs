@@ -111,6 +111,10 @@ public class Dag
             input = ports[p2];
             output = ports[p1];
         }
+        if (p1 == p2)
+        {
+            throw new Exception("Cannot connect node to itself");
+        }
         if (!input.isInput || output.isInput)
         {
             throw new Exception("Not connecting output -> input");

@@ -3,11 +3,11 @@
 [ext_resource type="PackedScene" uid="uid://oxotdxhx6jy3" path="res://scenes/nodes/Node.tscn" id="1_j6xva"]
 
 [node name="Node" unique_id=415683582 instance=ExtResource("1_j6xva")]
-references = {
+references = Dictionary[String, NodePath]({
 "text_entry": NodePath("LineEdit")
-}
+})
 
-[node name="LineEdit" type="LineEdit" parent="." index="2" unique_id=1609139455]
+[node name="LineEdit" type="LineEdit" parent="." index="1" unique_id=1609139455]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

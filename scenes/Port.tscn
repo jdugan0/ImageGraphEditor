@@ -3,12 +3,28 @@
 [ext_resource type="Script" uid="uid://b435g76hbn1yp" path="res://scripts/frontend/PortUI.cs" id="1_db0mq"]
 [ext_resource type="PackedScene" uid="uid://dy7j30abqkcdh" path="res://scenes/Edge.tscn" id="2_iv2cg"]
 
-[node name="Port" type="ColorRect" unique_id=903137995]
-custom_minimum_size = Vector2(40, 40)
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Control" type="Control" unique_id=1028703293]
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
 script = ExtResource("1_db0mq")
 edgeScene = ExtResource("2_iv2cg")
 
-[connection signal="mouse_entered" from="." to="." method="OnHover"]
-[connection signal="mouse_exited" from="." to="." method="OnHoverExit"]
+[node name="Port" type="ColorRect" parent="." unique_id=903137995]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="mouse_entered" from="Port" to="." method="OnHover"]
+[connection signal="mouse_exited" from="Port" to="." method="OnHoverExit"]
