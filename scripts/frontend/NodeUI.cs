@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Godot;
 using Godot.Collections;
 using Dict = System.Collections.Generic.Dictionary<string, object>;
@@ -19,7 +20,7 @@ public partial class NodeUI : Control
     PackedScene portScene;
 
     [Export]
-    Dictionary<string, Node> references;
+    Dictionary<string, NodePath> references;
     public string operatorType;
 
     public void Init()
@@ -52,15 +53,35 @@ public partial class NodeUI : Control
         switch (operatorType)
         {
             case "ADD":
-                ((Label)references["label"]).Text = (string)node.data["result"];
+                if (node.evaluated)
+                {
+                    ((Label)GetNode(references["label"])).Text = (
+                        (float)node.data["result"]
+                    ).ToString();
+                }
+                else
+                {
+                    ((Label)GetNode(references["label"])).Text = "";
+                }
                 break;
             case "CONSTANT":
-                string text = ((TextEdit)references["text_entry"]).Text;
-                float f = text.ToFloat();
-                node.SetData(dag, new Dict { ["value"] = text.ToFloat() });
+                float f;
+                if (references["text_entry"] == null)
+                    GD.Print(references.ToString());
+                string text = ((LineEdit)GetNode(references["text_entry"])).Text;
+                if (text.IsValidFloat())
+                {
+                    f = text.ToFloat();
+                }
+                else
+                {
+                    f = 0;
+                }
+                node.SetData(dag, new Dict { ["value"] = f });
                 break;
             default:
                 throw new Exception();
         }
+        node.evaluated = false;
     }
 }

@@ -36,9 +36,10 @@ public partial class PortUI : Control
         {
             pressed = true;
             currentEdge = edgeScene.Instantiate<EdgeUI>();
-            currentEdge.start = GetViewport().GetMousePosition();
+            AddChild(currentEdge);
+            currentEdge.start = GlobalPosition;
         }
-        if (Input.IsActionJustReleased("CLICK"))
+        if (Input.IsActionJustReleased("CLICK") && pressed)
         {
             if (
                 DataManager.instance.currentHover != null
@@ -48,36 +49,37 @@ public partial class PortUI : Control
                 try
                 {
                     DataManager.instance.dag.TryConnect(
-                        port,
-                        DataManager.instance.currentHover.port
+                        DataManager.instance.currentHover.port,
+                        port
                     );
-                    DataManager.instance.dag.Connect(id, DataManager.instance.currentHover.id);
+                    DataManager.instance.dag.Connect(DataManager.instance.currentHover.id, id);
                 }
                 catch (Exception e)
                 {
+                    currentEdge.QueueFree();
                     GD.Print(e.Message);
                 }
             }
-            else
+            else if (currentEdge != null)
             {
                 currentEdge.QueueFree();
             }
             currentEdge = null;
             pressed = false;
-            currentEdge = null;
         }
         if (pressed)
         {
+            currentEdge.QueueRedraw();
             if (
                 DataManager.instance.currentHover != null
                 && DataManager.instance.currentHover != this
             )
             {
-                currentEdge.end = DataManager.instance.currentHover.Position;
+                currentEdge.end = DataManager.instance.currentHover.GlobalPosition;
             }
             else
             {
-                currentEdge.end = GetViewport().GetMousePosition();
+                currentEdge.end = GetGlobalMousePosition();
             }
         }
     }

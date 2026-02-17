@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 
 public enum GraphType
 {
@@ -14,6 +15,8 @@ public abstract class GraphNode
     public readonly List<Guid> inputPorts = new List<Guid>();
 
     public readonly Dictionary<string, object> data = new Dictionary<string, object>();
+
+    public bool evaluated;
 
     public Guid id;
 
@@ -30,7 +33,7 @@ public abstract class GraphNode
 public class Port
 {
     public bool isInput;
-    public List<Guid> edges;
+    public List<Guid> edges = new List<Guid>();
     public Guid parent;
     public GraphType type = GraphType.Null;
     public object data = null;
@@ -67,8 +70,8 @@ public class Dag
     public Guid AddNode(GraphNode node)
     {
         Guid id = Guid.NewGuid();
-        node.Initalize(this, id);
         nodes.Add(id, node);
+        node.Initalize(this, id);
         if (node.inputPorts.Count == 0)
         {
             rootNodes.Add(id, node);
@@ -96,21 +99,21 @@ public class Dag
 
     public void TryConnect(Port input, Port output)
     {
-        if (!input.isInput || output.isInput)
-        {
-            throw new Exception();
-        }
+        // if (!input.isInput || output.isInput)
+        // {
+        //     throw new Exception("Not connecting output -> input");
+        // }
         if (input.edges.Count > 0)
         {
-            throw new Exception();
+            throw new Exception("Input already connected.");
         }
         if (input.type != output.type)
         {
-            throw new Exception();
+            throw new Exception("Types don't match.");
         }
         if (AreNodesConnected(input.parent, output.parent))
         {
-            throw new Exception();
+            throw new Exception("Loop found.");
         }
     }
 
@@ -164,6 +167,8 @@ public class Dag
         edges.Remove(edgeId);
         ports[edge.portInput].edges.Remove(edgeId);
         ports[edge.portOutput].edges.Remove(edgeId);
+        ports[edge.portInput].data = null;
+        ports[edge.portOutput].data = null;
         return edge;
     }
 
@@ -229,13 +234,14 @@ public class Dag
             foreach (Guid portid in n.outputPorts)
             {
                 Port p = ports[portid];
+                // GD.Print("output data at prop: " + p.data);
                 foreach (Guid eid in p.edges)
                 {
                     Edge e = edges[eid];
                     Guid parent = ports[e.portInput].parent;
+                    ports[e.portInput].data = p.data;
                     if (!seen.Contains(parent))
                     {
-                        ports[e.portInput].data = ports[e.portOutput].data;
                         seen.Add(parent);
                         nodeQueue.Enqueue(parent);
                     }

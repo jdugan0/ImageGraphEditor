@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dvmohah20ujau"]
+
+[ext_resource type="Script" uid="uid://b435g76hbn1yp" path="res://scripts/frontend/PortUI.cs" id="1_db0mq"]
+[ext_resource type="PackedScene" uid="uid://dy7j30abqkcdh" path="res://scenes/Edge.tscn" id="2_iv2cg"]
+
+[node name="Port" type="ColorRect" unique_id=903137995]
+custom_minimum_size = Vector2(40, 40)
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_db0mq")
+edgeScene = ExtResource("2_iv2cg")
+
+[connection signal="mouse_entered" from="." to="." method="OnHover"]
+[connection signal="mouse_exited" from="." to="." method="OnHoverExit"]

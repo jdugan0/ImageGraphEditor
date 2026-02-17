@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Godot;
 
 public partial class AddGraphNode : GraphNode
@@ -20,8 +21,16 @@ public partial class AddGraphNode : GraphNode
         Port i1 = dag.ports[inputPorts[0]];
         Port i2 = dag.ports[inputPorts[1]];
         Port o1 = dag.ports[outputPorts[0]];
-        o1.data = (int)i1.data + (int)i2.data;
-        base.Evaluate(dag);
+        if (i1.data != null && i2.data != null)
+        {
+            o1.data = (float)i1.data + (float)i2.data;
+        }
+        else
+        {
+            o1.data = 0.0f;
+        }
+        data["result"] = o1.data;
+        evaluated = true;
     }
 }
 

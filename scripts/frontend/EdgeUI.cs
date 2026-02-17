@@ -14,8 +14,8 @@ public partial class EdgeUI : Control
         edge = DataManager.instance.dag.edges[id];
     }
 
-    public override void _Process(double delta)
+    public override void _Draw()
     {
-        DrawLine(start, end, Colors.Blue, 20);
+        DrawLine(-start + GlobalPosition, end - GlobalPosition, Colors.Blue, 20);
     }
 }

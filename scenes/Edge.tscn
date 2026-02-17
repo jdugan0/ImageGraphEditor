@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dy7j30abqkcdh"]
+
+[ext_resource type="Script" uid="uid://jf7u2wv2e8xd" path="res://scripts/frontend/EdgeUI.cs" id="1_np5sn"]
+
+[node name="Edge" type="Control" unique_id=482420914]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_np5sn")

@@ -1,3 +1,18 @@
 [gd_scene format=3 uid="uid://drwqf3hdaxm41"]
 
-[node name="Playground" type="Node2D" unique_id=2097037184]
+[ext_resource type="Script" uid="uid://dam4u2jdvomeb" path="res://scripts/frontend/DataManager.cs" id="1_oc3eq"]
+[ext_resource type="PackedScene" uid="uid://da5mvg07joraw" path="res://scenes/nodes/NodeAdd.tscn" id="2_n5vcc"]
+[ext_resource type="PackedScene" uid="uid://rp27gh5man5e" path="res://scenes/nodes/NodeConstant.tscn" id="3_jte20"]
+
+[node name="Playground" type="Control" unique_id=1823127634]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_oc3eq")
+nodeUI = Dictionary[String, PackedScene]({
+"ADD": ExtResource("2_n5vcc"),
+"CONSTANT": ExtResource("3_jte20")
+})
