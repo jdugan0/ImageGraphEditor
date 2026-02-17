@@ -16,9 +16,9 @@ public abstract class GraphNode
 
     public readonly Dictionary<string, object> data = new Dictionary<string, object>();
 
-    public bool evaluated;
-
     public Guid id;
+
+    public NodeUI UI;
 
     public virtual void Evaluate(Dag dag) { }
 
@@ -148,7 +148,7 @@ public class Dag
                     Guid parent = ports[e.portInput].parent;
                     if (parent.Equals(n2))
                     {
-                        return false;
+                        return true;
                     }
                     if (!seen.Contains(parent))
                     {
@@ -231,6 +231,10 @@ public class Dag
             Guid curr = nodeQueue.Dequeue();
             GraphNode n = nodes[curr];
             n.Evaluate(this);
+            if (n.UI != null)
+            {
+                n.UI.SetData();
+            }
             foreach (Guid portid in n.outputPorts)
             {
                 Port p = ports[portid];

@@ -43,26 +43,16 @@ public partial class NodeUI : Control
         }
     }
 
-    public override void _Process(double delta)
-    {
-        SetData();
-    }
+    public override void _Process(double delta) { }
 
     public void SetData()
     {
         switch (operatorType)
         {
             case GraphNodeTypes.ADD:
-                if (node.evaluated)
-                {
-                    ((Label)GetNode(references["label"])).Text = (
-                        (float)node.data["result"]
-                    ).ToString();
-                }
-                else
-                {
-                    ((Label)GetNode(references["label"])).Text = "";
-                }
+                ((Label)GetNode(references["label"])).Text = (
+                    (float)node.data["result"]
+                ).ToString();
                 break;
             case GraphNodeTypes.CONSTANT:
                 float f;
@@ -82,6 +72,5 @@ public partial class NodeUI : Control
             default:
                 throw new Exception();
         }
-        node.evaluated = false;
     }
 }

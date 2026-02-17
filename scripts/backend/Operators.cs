@@ -36,7 +36,6 @@ public partial class AddGraphNode : GraphNode
             o1.data = 0.0f;
         }
         data["result"] = o1.data;
-        evaluated = true;
     }
 }
 

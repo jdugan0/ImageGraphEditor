@@ -52,6 +52,7 @@ public partial class DataManager : Control
         nodeInstance.id = id;
         nodeInstance.Init();
         nodeInstance.Position = GetViewport().GetMousePosition();
+        node.UI = nodeInstance;
         AddChild(nodeInstance);
     }
 }
