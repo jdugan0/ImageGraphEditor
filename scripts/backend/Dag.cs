@@ -251,37 +251,44 @@ public class Dag
         return node;
     }
 
-    public void Propegate()
+    public void Propagate()
     {
-        Queue<Guid> nodeQueue = new Queue<Guid>();
-        HashSet<Guid> seen = new HashSet<Guid>();
-        foreach (var x in rootNodes.Keys)
+        var indegree = new Dictionary<Guid, int>(nodes.Count);
+        foreach (var nid in nodes.Keys)
+            indegree[nid] = 0;
+        foreach (var e in edges.Values)
         {
-            nodeQueue.Enqueue(x);
-            seen.Add(x);
+            Guid dstNode = ports[e.portInput].parent;
+            if (indegree.ContainsKey(dstNode))
+                indegree[dstNode]++;
         }
-        while (nodeQueue.Count != 0)
+        var q = new Queue<Guid>();
+        foreach (var kv in rootNodes)
+            q.Enqueue(kv.Key);
+
+        int processed = 0;
+        while (q.Count != 0)
         {
-            Guid curr = nodeQueue.Dequeue();
+            Guid curr = q.Dequeue();
+            processed++;
+
             GraphNode n = nodes[curr];
             n.Evaluate(this);
-            if (n.UI != null)
+            n.UI?.SetData();
+            foreach (Guid outPortId in n.outputPorts)
             {
-                n.UI.SetData();
-            }
-            foreach (Guid portid in n.outputPorts)
-            {
-                Port p = ports[portid];
-                // GD.Print("output data at prop: " + p.data);
-                foreach (Guid eid in p.edges)
+                Port outPort = ports[outPortId];
+
+                foreach (Guid eid in outPort.edges)
                 {
                     Edge e = edges[eid];
-                    Guid parent = ports[e.portInput].parent;
-                    ports[e.portInput].data = p.data;
-                    if (!seen.Contains(parent))
+                    ports[e.portInput].data = outPort.data;
+                    Guid dstNode = ports[e.portInput].parent;
+                    if (indegree.ContainsKey(dstNode))
                     {
-                        seen.Add(parent);
-                        nodeQueue.Enqueue(parent);
+                        indegree[dstNode]--;
+                        if (indegree[dstNode] == 0)
+                            q.Enqueue(dstNode);
                     }
                 }
             }

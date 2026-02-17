@@ -20,7 +20,7 @@ public partial class DataManager : Control
 
     public override void _Process(double delta)
     {
-        dag.Propegate();
+        dag.Propagate();
         if (Input.IsActionJustPressed("Z"))
         {
             CreateUINode(GraphNodeTypes.ADD);
