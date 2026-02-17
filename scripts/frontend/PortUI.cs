@@ -48,10 +48,7 @@ public partial class PortUI : Control
             {
                 try
                 {
-                    DataManager.instance.dag.TryConnect(
-                        DataManager.instance.currentHover.port,
-                        port
-                    );
+                    DataManager.instance.dag.TryConnect(DataManager.instance.currentHover.id, id);
                     DataManager.instance.dag.Connect(DataManager.instance.currentHover.id, id);
                 }
                 catch (Exception e)
@@ -75,7 +72,15 @@ public partial class PortUI : Control
                 && DataManager.instance.currentHover != this
             )
             {
-                currentEdge.end = DataManager.instance.currentHover.GlobalPosition;
+                try
+                {
+                    DataManager.instance.dag.TryConnect(DataManager.instance.currentHover.id, id);
+                    currentEdge.end = DataManager.instance.currentHover.GlobalPosition;
+                }
+                catch
+                {
+                    currentEdge.end = GetGlobalMousePosition();
+                }
             }
             else
             {

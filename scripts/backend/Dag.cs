@@ -97,12 +97,24 @@ public class Dag
         return id;
     }
 
-    public void TryConnect(Port input, Port output)
+    public void TryConnect(Guid p1, Guid p2)
     {
-        // if (!input.isInput || output.isInput)
-        // {
-        //     throw new Exception("Not connecting output -> input");
-        // }
+        Port input;
+        Port output;
+        if (ports[p1].isInput)
+        {
+            input = ports[p1];
+            output = ports[p2];
+        }
+        else
+        {
+            input = ports[p2];
+            output = ports[p1];
+        }
+        if (!input.isInput || output.isInput)
+        {
+            throw new Exception("Not connecting output -> input");
+        }
         if (input.edges.Count > 0)
         {
             throw new Exception("Input already connected.");
@@ -117,13 +129,29 @@ public class Dag
         }
     }
 
-    public Guid Connect(Guid portInput, Guid portOutput)
+    public Guid Connect(Guid p1, Guid p2)
     {
-        Port input = ports[portInput];
-        Port output = ports[portOutput];
-        TryConnect(input, output);
+        Port input;
+        Port output;
+        Guid inputId;
+        Guid outputId;
+        if (ports[p1].isInput)
+        {
+            input = ports[p1];
+            inputId = p1;
+            output = ports[p2];
+            outputId = p2;
+        }
+        else
+        {
+            input = ports[p2];
+            inputId = p2;
+            output = ports[p1];
+            outputId = p1;
+        }
+        TryConnect(p1, p2);
         Guid id = Guid.NewGuid();
-        Edge edge = new Edge(id, portInput, portOutput);
+        Edge edge = new Edge(id, inputId, outputId);
         edges.Add(id, edge);
         input.edges.Add(id);
         output.edges.Add(id);

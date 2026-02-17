@@ -35,6 +35,7 @@ public partial class AddGraphNode : GraphNode
         {
             o1.data = 0.0f;
         }
+        // GD.Print(o1.data);
         data["result"] = o1.data;
     }
 }
