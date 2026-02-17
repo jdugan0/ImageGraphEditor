@@ -1,39 +1,13 @@
 [gd_scene format=3 uid="uid://rp27gh5man5e"]
 
-[ext_resource type="Script" uid="uid://bjgeh5da4ao5k" path="res://scripts/frontend/NodeUI.cs" id="1_j6xva"]
-[ext_resource type="PackedScene" uid="uid://dvmohah20ujau" path="res://scenes/Port.tscn" id="2_4gg3m"]
+[ext_resource type="PackedScene" uid="uid://oxotdxhx6jy3" path="res://scenes/nodes/Node.tscn" id="1_j6xva"]
 
-[node name="Node" type="Panel" unique_id=415683582 node_paths=PackedStringArray("inputPorts", "outputPorts")]
-offset_right = 200.0
-offset_bottom = 150.0
-script = ExtResource("1_j6xva")
-inputPorts = NodePath("Inputs")
-outputPorts = NodePath("Outputs")
-portScene = ExtResource("2_4gg3m")
-references = Dictionary[String, NodePath]({
+[node name="Node" unique_id=415683582 instance=ExtResource("1_j6xva")]
+references = {
 "text_entry": NodePath("LineEdit")
-})
+}
 
-[node name="Inputs" type="VBoxContainer" parent="." unique_id=1038217595]
-layout_mode = 1
-anchors_preset = 9
-anchor_bottom = 1.0
-offset_right = 22.0
-grow_vertical = 2
-alignment = 1
-
-[node name="Outputs" type="VBoxContainer" parent="." unique_id=1567751888]
-layout_mode = 1
-anchors_preset = 11
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = 22.0
-grow_horizontal = 0
-grow_vertical = 2
-alignment = 1
-
-[node name="LineEdit" type="LineEdit" parent="." unique_id=1726120029]
+[node name="LineEdit" type="LineEdit" parent="." index="2" unique_id=1609139455]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -46,3 +20,4 @@ offset_right = 34.25
 offset_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
+alignment = 1
