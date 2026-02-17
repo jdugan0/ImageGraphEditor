@@ -12,7 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_oc3eq")
-nodeUI = Dictionary[String, PackedScene]({
-"ADD": ExtResource("2_n5vcc"),
-"CONSTANT": ExtResource("3_jte20")
+nodeUI = Dictionary[int, PackedScene]({
+0: ExtResource("2_n5vcc"),
+1: ExtResource("3_jte20")
 })

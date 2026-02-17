@@ -8,10 +8,8 @@ public partial class DataManager : Control
     public static DataManager instance;
 
     [Export]
-    Godot.Collections.Dictionary<string, PackedScene> nodeUI = new Godot.Collections.Dictionary<
-        string,
-        PackedScene
-    >();
+    Godot.Collections.Dictionary<GraphNodeTypes, PackedScene> nodeUI =
+        new Godot.Collections.Dictionary<GraphNodeTypes, PackedScene>();
 
     public PortUI currentHover;
 
@@ -25,29 +23,26 @@ public partial class DataManager : Control
         dag.Propegate();
         if (Input.IsActionJustPressed("Z"))
         {
-            CreateUINode("ADD");
+            CreateUINode(GraphNodeTypes.ADD);
         }
         if (Input.IsActionJustPressed("X"))
         {
-            CreateUINode("CONSTANT");
+            CreateUINode(GraphNodeTypes.CONSTANT);
         }
     }
 
-    public void CreateUINode(string operatorTime)
+    public void CreateUINode(GraphNodeTypes type)
     {
         GraphNode node;
-        NodeUI nodeInstance;
-        switch (operatorTime)
+        NodeUI nodeInstance = nodeUI[type].Instantiate<NodeUI>();
+        nodeInstance.operatorType = type;
+        switch (type)
         {
-            case "ADD":
-                nodeInstance = nodeUI["ADD"].Instantiate<NodeUI>();
+            case GraphNodeTypes.ADD:
                 node = new AddGraphNode();
-                nodeInstance.operatorType = "ADD";
                 break;
-            case "CONSTANT":
-                nodeInstance = nodeUI["CONSTANT"].Instantiate<NodeUI>();
+            case GraphNodeTypes.CONSTANT:
                 node = new ConstantGraphNode();
-                nodeInstance.operatorType = "CONSTANT";
                 break;
             default:
                 throw new Exception();

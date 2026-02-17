@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Godot;
 
+public enum GraphNodeTypes
+{
+    ADD,
+    CONSTANT,
+}
+
 public partial class AddGraphNode : GraphNode
 {
     public override void Initalize(Dag dag, Guid id)

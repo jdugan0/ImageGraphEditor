@@ -21,7 +21,7 @@ public partial class NodeUI : Control
 
     [Export]
     Dictionary<string, NodePath> references;
-    public string operatorType;
+    public GraphNodeTypes operatorType;
 
     public void Init()
     {
@@ -52,7 +52,7 @@ public partial class NodeUI : Control
     {
         switch (operatorType)
         {
-            case "ADD":
+            case GraphNodeTypes.ADD:
                 if (node.evaluated)
                 {
                     ((Label)GetNode(references["label"])).Text = (
@@ -64,7 +64,7 @@ public partial class NodeUI : Control
                     ((Label)GetNode(references["label"])).Text = "";
                 }
                 break;
-            case "CONSTANT":
+            case GraphNodeTypes.CONSTANT:
                 float f;
                 if (references["text_entry"] == null)
                     GD.Print(references.ToString());
