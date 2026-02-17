@@ -100,7 +100,7 @@ public partial class NodeUI : Control
                 }
                 else
                 {
-                    f = 0;
+                    throw new Exception("Not valid float.");
                 }
                 node.SetData(dag, new Dict { ["value"] = f });
                 break;

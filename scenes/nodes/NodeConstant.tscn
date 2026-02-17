@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://rp27gh5man5e"]
 
 [ext_resource type="PackedScene" uid="uid://oxotdxhx6jy3" path="res://scenes/nodes/Node.tscn" id="1_j6xva"]
+[ext_resource type="Script" uid="uid://ds3rrc8x8jaws" path="res://scripts/frontend/LineEditUnFocus.cs" id="2_4gg3m"]
 
 [node name="Node" unique_id=415683582 instance=ExtResource("1_j6xva")]
 references = Dictionary[String, NodePath]({
@@ -21,3 +22,4 @@ offset_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
+script = ExtResource("2_4gg3m")
