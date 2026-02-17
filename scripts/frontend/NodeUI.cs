@@ -35,7 +35,11 @@ public partial class NodeUI : Control
     [Export]
     Panel panel;
 
+    [Export]
+    Button dragButton;
+
     private StyleBoxFlat _panelStyle;
+    Vector2? dragDelta = null;
 
     public void Init()
     {
@@ -55,6 +59,13 @@ public partial class NodeUI : Control
             p.Init();
             outputPorts.AddChild(p);
         }
+        if (operatorType == GraphNodeTypes.CONSTANT)
+        {
+            ((LineEdit)GetNode(references["text_entry"])).TextChanged += (string text) =>
+            {
+                dag.MarkDirty(id);
+            };
+        }
     }
 
     public override void _Ready()
@@ -63,9 +74,30 @@ public partial class NodeUI : Control
         panel.AddThemeStyleboxOverride("panel", _panelStyle);
         _panelStyle.BorderColor = _panelStyle.BgColor;
         nodeType.Text = operatorType.ToString();
+        dragButton.ButtonDown += Drag;
+        dragButton.ButtonUp += EndDrag;
     }
 
-    public override void _Process(double delta) { }
+    public void EndDrag()
+    {
+        dragDelta = null;
+    }
+
+    public void Drag()
+    {
+        if (dragDelta == null)
+        {
+            dragDelta = GlobalPosition - GetGlobalMousePosition();
+        }
+    }
+
+    public override void _Process(double delta)
+    {
+        if (dragDelta != null)
+        {
+            GlobalPosition = dragDelta.Value + GetGlobalMousePosition();
+        }
+    }
 
     public void RemoveSelf()
     {

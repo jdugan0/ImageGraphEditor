@@ -10,7 +10,7 @@ border_width_top = 12
 border_width_right = 5
 border_width_bottom = 5
 
-[node name="Control" type="Control" unique_id=830049071 node_paths=PackedStringArray("inputPorts", "outputPorts", "errorMessage", "nodeType", "panel")]
+[node name="Control" type="Control" unique_id=830049071 node_paths=PackedStringArray("inputPorts", "outputPorts", "errorMessage", "nodeType", "panel", "dragButton")]
 layout_mode = 3
 anchors_preset = 0
 size_flags_horizontal = 4
@@ -24,6 +24,7 @@ panelTheme = SubResource("StyleBoxFlat_nuwou")
 errorMessage = NodePath("Node/ErrorLabel")
 nodeType = NodePath("Node/TypeLabel")
 panel = NodePath("Node")
+dragButton = NodePath("Node/DragButton")
 
 [node name="Node" type="Panel" parent="." unique_id=415683582]
 layout_mode = 1
@@ -38,6 +39,25 @@ offset_right = 100.0
 offset_bottom = 75.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="ErrorLabel" type="Label" parent="Node" unique_id=1064972382]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 12.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 8
+horizontal_alignment = 1
+
+[node name="DragButton" type="Button" parent="Node" unique_id=919802898]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 8.0
+grow_horizontal = 2
+focus_mode = 0
+action_mode = 0
+keep_pressed_outside = true
 
 [node name="Inputs" type="VBoxContainer" parent="Node" unique_id=1038217595]
 layout_mode = 1
@@ -61,26 +81,6 @@ grow_horizontal = 0
 grow_vertical = 2
 alignment = 1
 
-[node name="Button" type="Button" parent="Node" unique_id=930309501]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -18.0
-offset_bottom = 31.0
-grow_horizontal = 0
-focus_mode = 0
-text = "X"
-
-[node name="ErrorLabel" type="Label" parent="Node" unique_id=1064972382]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 12.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 8
-horizontal_alignment = 1
-
 [node name="TypeLabel" type="Label" parent="Node" unique_id=1111389478]
 layout_mode = 1
 anchors_preset = 12
@@ -92,5 +92,16 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 8
 horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="Node" unique_id=930309501]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -18.0
+offset_bottom = 31.0
+grow_horizontal = 0
+focus_mode = 0
+text = "X"
 
 [connection signal="pressed" from="Node/Button" to="." method="RemoveSelf"]

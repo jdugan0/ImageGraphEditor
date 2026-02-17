@@ -68,6 +68,14 @@ public class Dag
     public readonly Dictionary<Guid, GraphNode> nodes = new Dictionary<Guid, GraphNode>();
     public readonly Dictionary<Guid, Edge> edges = new Dictionary<Guid, Edge>();
     public readonly Dictionary<Guid, GraphNode> rootNodes = new Dictionary<Guid, GraphNode>();
+    private Queue<Guid> q = new Queue<Guid>();
+    private readonly HashSet<Guid> dirty = new HashSet<Guid>();
+
+    public void MarkDirty(Guid nodeId)
+    {
+        if (nodes.ContainsKey(nodeId))
+            dirty.Add(nodeId);
+    }
 
     public Guid AddNode(GraphNode node)
     {
@@ -78,7 +86,7 @@ public class Dag
         {
             rootNodes.Add(id, node);
         }
-
+        MarkDirty(id);
         return id;
     }
 
@@ -162,6 +170,7 @@ public class Dag
         edges.Add(id, edge);
         input.edges.Add(id);
         output.edges.Add(id);
+        MarkDirty(output.parent);
         return id;
     }
 
@@ -196,7 +205,7 @@ public class Dag
         return false;
     }
 
-    public Edge RemoveEdge(Guid edgeId)
+    public Edge RemoveEdge(Guid edgeId, bool enqueue)
     {
         Edge edge = edges[edgeId];
         edges.Remove(edgeId);
@@ -205,6 +214,8 @@ public class Dag
         ports[edge.portInput].data = null;
         ports[edge.portOutput].data = null;
         edge.UI?.QueueFree();
+        MarkDirty(ports[edge.portInput].parent);
+        MarkDirty(ports[edge.portOutput].parent);
         return edge;
     }
 
@@ -224,89 +235,129 @@ public class Dag
         }
         for (int i = 0; i < p.edges.Count; i++)
         {
-            RemoveEdge(p.edges[0]);
+            RemoveEdge(p.edges[0], false);
         }
+        ports.Remove(portId);
         return p;
     }
 
     public GraphNode RemoveNode(Guid nodeId)
     {
-        GraphNode node = nodes[nodeId];
+        if (!nodes.TryGetValue(nodeId, out GraphNode node))
+            return null;
+        rootNodes.Remove(nodeId);
+        var inPorts = node.inputPorts.ToArray();
+        var outPorts = node.outputPorts.ToArray();
+        foreach (var pid in inPorts)
+            RemovePort(pid);
+        foreach (var pid in outPorts)
+            RemovePort(pid);
         nodes.Remove(nodeId);
-        if (node.inputPorts.Count == 0)
-        {
-            rootNodes.Remove(nodeId);
-        }
-        for (int i = 0; i < node.inputPorts.Count; i++)
-        {
-            for (int j = 0; j < ports[node.inputPorts[0]].edges.Count; j++)
-            {
-                RemoveEdge(ports[node.inputPorts[0]].edges[0]);
-            }
-            RemovePort(node.inputPorts[0]);
-        }
-        for (int i = 0; i < node.outputPorts.Count; i++)
-        {
-            for (int j = 0; j < ports[node.outputPorts[0]].edges.Count; j++)
-            {
-                RemoveEdge(ports[node.outputPorts[0]].edges[0]);
-            }
-            RemovePort(node.outputPorts[0]);
-        }
         node.inputPorts.Clear();
         node.outputPorts.Clear();
+
         return node;
     }
 
     public void Propagate()
     {
-        var indegree = new Dictionary<Guid, int>(nodes.Count);
-        foreach (var nid in nodes.Keys)
-            indegree[nid] = 0;
-        foreach (var e in edges.Values)
+        if (dirty.Count == 0)
+            return;
+
+        var affected = new HashSet<Guid>();
+        var frontier = new Queue<Guid>();
+
+        foreach (var n in dirty)
         {
-            Guid dstNode = ports[e.portInput].parent;
-            if (indegree.ContainsKey(dstNode))
-                indegree[dstNode]++;
+            if (nodes.ContainsKey(n) && affected.Add(n))
+                frontier.Enqueue(n);
         }
-        var q = new Queue<Guid>();
-        foreach (var kv in rootNodes)
-            q.Enqueue(kv.Key);
+
+        while (frontier.Count != 0)
+        {
+            var curr = frontier.Dequeue();
+            var node = nodes[curr];
+
+            foreach (var outPid in node.outputPorts)
+            {
+                var outPort = ports[outPid];
+                foreach (var eid in outPort.edges)
+                {
+                    var e = edges[eid];
+                    var child = ports[e.portInput].parent;
+                    if (nodes.ContainsKey(child) && affected.Add(child))
+                        frontier.Enqueue(child);
+                }
+            }
+        }
+
+        var remaining = new Dictionary<Guid, int>(affected.Count);
+        foreach (var nid in affected)
+            remaining[nid] = 0;
+
+        foreach (var nid in affected)
+        {
+            var node = nodes[nid];
+            foreach (var inPid in node.inputPorts)
+            {
+                var inPort = ports[inPid];
+                foreach (var eid in inPort.edges)
+                {
+                    var e = edges[eid];
+                    var parent = ports[e.portOutput].parent;
+                    if (affected.Contains(parent))
+                        remaining[nid]++;
+                }
+            }
+        }
+
+        var ready = new Queue<Guid>();
+        foreach (var kv in remaining)
+            if (kv.Value == 0)
+                ready.Enqueue(kv.Key);
 
         int processed = 0;
-        while (q.Count != 0)
+
+        while (ready.Count != 0)
         {
-            Guid curr = q.Dequeue();
+            var curr = ready.Dequeue();
+            if (!nodes.ContainsKey(curr))
+                continue;
             processed++;
 
-            GraphNode n = nodes[curr];
+            var n = nodes[curr];
+
             try
             {
                 n.Evaluate(this);
                 n.UI?.SetData();
                 n.UI?.SucceedEval();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                n.UI?.FailedEval(e.Message);
+                n.UI?.FailedEval(ex.Message);
             }
-            foreach (Guid outPortId in n.outputPorts)
+            foreach (var outPid in n.outputPorts)
             {
-                Port outPort = ports[outPortId];
+                var outPort = ports[outPid];
 
-                foreach (Guid eid in outPort.edges)
+                foreach (var eid in outPort.edges)
                 {
-                    Edge e = edges[eid];
+                    var e = edges[eid];
+
                     ports[e.portInput].data = outPort.data;
-                    Guid dstNode = ports[e.portInput].parent;
-                    if (indegree.ContainsKey(dstNode))
-                    {
-                        indegree[dstNode]--;
-                        if (indegree[dstNode] == 0)
-                            q.Enqueue(dstNode);
-                    }
+
+                    var child = ports[e.portInput].parent;
+                    if (!affected.Contains(child))
+                        continue;
+
+                    remaining[child]--;
+                    if (remaining[child] == 0)
+                        ready.Enqueue(child);
                 }
             }
         }
+
+        dirty.Clear();
     }
 }
