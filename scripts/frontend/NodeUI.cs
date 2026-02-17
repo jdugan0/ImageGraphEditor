@@ -27,7 +27,10 @@ public partial class NodeUI : Control
     public StyleBoxFlat panelTheme;
 
     [Export]
-    Label message;
+    Label errorMessage;
+
+    [Export]
+    Label nodeType;
 
     [Export]
     Panel panel;
@@ -59,6 +62,7 @@ public partial class NodeUI : Control
         _panelStyle = (StyleBoxFlat)panelTheme.Duplicate(true);
         panel.AddThemeStyleboxOverride("panel", _panelStyle);
         _panelStyle.BorderColor = _panelStyle.BgColor;
+        nodeType.Text = operatorType.ToString();
     }
 
     public override void _Process(double delta) { }
@@ -71,13 +75,14 @@ public partial class NodeUI : Control
 
     public void FailedEval(string msg)
     {
-        message.Text = msg;
+        errorMessage.Text = msg;
         _panelStyle.BorderColor = Colors.Red;
     }
 
     public void SucceedEval()
     {
         _panelStyle.BorderColor = panelTheme.BgColor;
+        errorMessage.Text = "";
     }
 
     public void SetData()
@@ -91,8 +96,6 @@ public partial class NodeUI : Control
                 break;
             case GraphNodeTypes.CONSTANT:
                 float f;
-                if (references["text_entry"] == null)
-                    GD.Print(references.ToString());
                 string text = ((LineEdit)GetNode(references["text_entry"])).Text;
                 if (text.IsValidFloat())
                 {
@@ -100,6 +103,7 @@ public partial class NodeUI : Control
                 }
                 else
                 {
+                    node.SetData(dag, new Dict { ["value"] = null });
                     throw new Exception("Not valid float.");
                 }
                 node.SetData(dag, new Dict { ["value"] = f });
