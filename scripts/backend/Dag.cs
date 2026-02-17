@@ -183,9 +183,9 @@ public class Dag
         {
             nodes[p.parent].outputPorts.Remove(portId);
         }
-        foreach (Guid eid in p.edges)
+        for (int i = 0; i < p.edges.Count; i++)
         {
-            RemoveEdge(eid);
+            RemoveEdge(p.edges[0]);
         }
         return p;
     }
@@ -198,19 +198,21 @@ public class Dag
         {
             rootNodes.Remove(nodeId);
         }
-        foreach (Guid port in node.inputPorts)
+        for (int i = 0; i < node.inputPorts.Count; i++)
         {
-            foreach (Guid eid in ports[port].edges)
+            for (int j = 0; j < ports[node.inputPorts[0]].edges.Count; j++)
             {
-                RemoveEdge(eid);
+                RemoveEdge(ports[node.inputPorts[0]].edges[0]);
             }
+            RemovePort(node.inputPorts[0]);
         }
-        foreach (Guid port in node.outputPorts)
+        for (int i = 0; i < node.outputPorts.Count; i++)
         {
-            foreach (Guid eid in ports[port].edges)
+            for (int j = 0; j < ports[node.outputPorts[0]].edges.Count; j++)
             {
-                RemoveEdge(eid);
+                RemoveEdge(ports[node.outputPorts[0]].edges[0]);
             }
+            RemovePort(node.inputPorts[0]);
         }
         node.inputPorts.Clear();
         node.outputPorts.Clear();
