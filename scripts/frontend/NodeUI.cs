@@ -45,6 +45,12 @@ public partial class NodeUI : Control
 
     public override void _Process(double delta) { }
 
+    public void RemoveSelf()
+    {
+        dag.RemoveNode(id);
+        QueueFree();
+    }
+
     public void SetData()
     {
         switch (operatorType)

@@ -52,6 +52,8 @@ public class Edge
     public Guid portInput;
     public Guid portOutput;
 
+    public EdgeUI UI;
+
     public Edge(Guid id, Guid input, Guid output)
     {
         this.id = id;
@@ -133,7 +135,7 @@ public class Dag
         }
     }
 
-    public Guid Connect(Guid p1, Guid p2)
+    public Guid Connect(Guid p1, Guid p2, EdgeUI UI)
     {
         Port input;
         Port output;
@@ -156,6 +158,7 @@ public class Dag
         TryConnect(p1, p2);
         Guid id = Guid.NewGuid();
         Edge edge = new Edge(id, inputId, outputId);
+        edge.UI = UI;
         edges.Add(id, edge);
         input.edges.Add(id);
         output.edges.Add(id);
@@ -201,19 +204,23 @@ public class Dag
         ports[edge.portOutput].edges.Remove(edgeId);
         ports[edge.portInput].data = null;
         ports[edge.portOutput].data = null;
+        edge.UI?.QueueFree();
         return edge;
     }
 
     public Port RemovePort(Guid portId)
     {
         Port p = ports[portId];
-        if (p.isInput)
+        if (nodes.ContainsKey(p.parent))
         {
-            nodes[p.parent].inputPorts.Remove(portId);
-        }
-        else
-        {
-            nodes[p.parent].outputPorts.Remove(portId);
+            if (p.isInput)
+            {
+                nodes[p.parent].inputPorts.Remove(portId);
+            }
+            else
+            {
+                nodes[p.parent].outputPorts.Remove(portId);
+            }
         }
         for (int i = 0; i < p.edges.Count; i++)
         {
@@ -244,7 +251,7 @@ public class Dag
             {
                 RemoveEdge(ports[node.outputPorts[0]].edges[0]);
             }
-            RemovePort(node.inputPorts[0]);
+            RemovePort(node.outputPorts[0]);
         }
         node.inputPorts.Clear();
         node.outputPorts.Clear();

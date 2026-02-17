@@ -49,7 +49,11 @@ public partial class PortUI : Control
                 try
                 {
                     DataManager.instance.dag.TryConnect(DataManager.instance.currentHover.id, id);
-                    DataManager.instance.dag.Connect(DataManager.instance.currentHover.id, id);
+                    DataManager.instance.dag.Connect(
+                        DataManager.instance.currentHover.id,
+                        id,
+                        currentEdge
+                    );
                 }
                 catch (Exception e)
                 {
